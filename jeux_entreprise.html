@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>Jeux de — Gestion d'entreprise</title>
+<style>
+:root{--bg:#f3f6f8;--ink:#172b3a;--muted:#617487;--navy:#102a43;--teal:#0f766e;--gold:#f4b942;--card:#fff;--line:#dce5eb;--red:#b54747}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:linear-gradient(135deg,#102a43,#145b62);color:white;padding:24px 18px 30px}
+.wrap{max-width:1050px;margin:auto}header .eyebrow{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#b7e4dc;font-weight:800}h1{font-size:clamp(2rem,5vw,3.1rem);margin:7px 0 5px;line-height:1.05}header p{margin:0;color:#d9e8ee;max-width:620px}
+main{max-width:1050px;margin:-15px auto 40px;padding:0 14px}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:15px;box-shadow:0 8px 24px #18364b0a}
+h2{font-size:1.15rem;margin:0 0 14px}h3{font-size:1rem;margin:0 0 8px}.muted{color:var(--muted);font-size:.9rem}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+label{display:block;font-weight:700;font-size:.88rem;margin-bottom:6px}input,select{font:inherit;width:100%;padding:12px;border:1px solid #cbd7df;border-radius:10px;background:white;color:var(--ink)}button{font:inherit;font-weight:800;border:0;border-radius:11px;padding:12px 15px;cursor:pointer;transition:transform .12s,opacity .12s}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--teal);color:white}.dark{background:var(--navy);color:white}.soft{background:#e7f4f1;color:#125d57}.ghost{background:#eef2f5;color:var(--ink)}.danger{background:#fff0ee;color:#a33d35}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hidden{display:none!important}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:6px;background:#e9f4f3;color:#125d57;padding:6px 10px;border-radius:999px;font-size:.78rem;font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stat{background:#f5f8fa;border:1px solid var(--line);border-radius:13px;padding:13px}.stat span{display:block;color:var(--muted);font-size:.78rem;font-weight:700}.stat strong{display:block;font-size:1.25rem;margin-top:5px;overflow-wrap:anywhere}
+.choice{display:flex;gap:10px;align-items:flex-start;padding:13px;border:1px solid var(--line);border-radius:13px;background:#fff;cursor:pointer;min-height:82px}.choice:has(input:checked){border-color:var(--teal);background:#eff9f7;box-shadow:0 0 0 1px var(--teal)}.choice input{width:auto;margin-top:4px;accent-color:var(--teal)}.choice b{display:block}.choice small{display:block;color:var(--muted);margin-top:4px;line-height:1.35}.section{margin-top:18px}.meter{height:7px;background:#e7edf1;border-radius:99px;overflow:hidden;margin-top:7px}.meter div{height:100%;background:var(--teal);border-radius:99px}.stake{background:#f8fafb;border-radius:12px;padding:10px;border:1px solid var(--line)}.stake .topline{font-size:.82rem}.log{max-height:240px;overflow:auto}.log-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:.9rem}.log-item:last-child{border-bottom:0}.event{background:#fff8e6;border:1px solid #f2d78c;border-radius:12px;padding:12px;margin:12px 0}.playerrow{border:1px solid var(--line);border-radius:13px;padding:13px;margin:8px 0}.rank{font-size:1.5rem;font-weight:900;color:var(--teal)}.foot{text-align:center;color:var(--muted);font-size:.8rem;padding:0 10px 24px}
+@media(max-width:650px){.grid,.grid3{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:16px}header{padding-top:20px}.stat strong{font-size:1.12rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">Jeu de stratégie · 2 à 4 joueurs</div><h1>Jeux de <span style="color:#f4b942">Entreprise</span></h1><p>Fais grandir ton entreprise sans oublier tes équipes, tes clients et la planète.</p></div></header>
+<main>
+<section id="setup" class="panel">
+<h2>🚀 Préparer la partie</h2><p class="muted">Chaque joueur commence avec 100 000 €, 10 salariés et 1 usine. Une partie dure 4 années de jeu par défaut.</p>
+<div class="grid">
+<div><label for="playerCount">Nombre de joueurs</label><select id="playerCount"><option>2</option><option>3</option><option>4</option></select></div>
+<div><label for="years">Durée de la partie</label><select id="years"><option value="3">3 années (rapide)</option><option value="4" selected>4 années (conseillé)</option><option value="5">5 années (longue)</option></select></div>
+</div>
+<div id="names" class="grid section"></div>
+<div class="actions"><button class="primary" id="startBtn">Créer les entreprises →</button></div>
+</section>
+
+<section id="game" class="hidden">
+<div class="panel">
+<div class="topline"><div><div class="muted" id="roundLabel">Année 1</div><h2 id="turnTitle">Au tour de…</h2></div><span class="pill" id="turnPill">Joueur 1</span></div>
+<div id="eventBox" class="event hidden"></div>
+<div class="stats" id="stats"></div>
+<div class="section"><h3>Parties prenantes</h3><div class="grid3" id="stakeholders"></div></div>
+</div>
+<form id="decisionForm" class="panel">
+<h2>🧠 Tes décisions pour cette année</h2><p class="muted">Choisis une option dans chaque catégorie. Les décisions sont appliquées lorsque tu valides ton tour.</p>
+<div class="section"><h3>1. Production</h3><div class="grid">
+<label class="choice"><input type="radio" name="production" value="volume" checked><span><b>Produire beaucoup</b><small>+20 000 € de chiffre d’affaires, +10 000 € de coûts.</small></span></label>
+<label class="choice"><input type="radio" name="production" value="quality"><span><b>Privilégier la qualité</b><small>+15 000 € de chiffre d’affaires, +5 000 € de coûts et +1 satisfaction client.</small></span></label>
+</div></div>
+<div class="section"><h3>2. Stratégie de prix</h3><div class="grid">
+<label class="choice"><input type="radio" name="price" value="high" checked><span><b>Prix élevé</b><small>Meilleure marge, mais moins attractif si les autres sont moins chers.</small></span></label>
+<label class="choice"><input type="radio" name="price" value="low"><span><b>Prix bas</b><small>Attire les clients. Si tout le monde choisit ça, les bénéfices baissent.</small></span></label>
+</div></div>
+<div class="section"><h3>3. Production interne ou sous-traitance</h3><div class="grid">
+<label class="choice"><input type="radio" name="make" value="internal" checked><span><b>Produire soi-même</b><small>Investissement de 15 000 €, coût par pièce réduit (modélisé par une prime de rentabilité).</small></span></label>
+<label class="choice"><input type="radio" name="make" value="outsource"><span><b>Sous-traiter</b><small>Pas d’investissement, mais risque d’un problème fournisseur.</small></span></label>
+</div></div>
+<div class="section"><h3>4. Salaires</h3><div class="grid">
+<label class="choice"><input type="radio" name="salary" value="raise"><span><b>Augmenter les salaires</b><small>Salariés +3, actionnaires −1, coût de 8 000 €.</small></span></label>
+<label class="choice"><input type="radio" name="salary" value="cut" checked><span><b>Réduire les salaires</b><small>Actionnaires +2, salariés −3, économie de 5 000 €.</small></span></label>
+</div></div>
+<div class="section"><h3>5. Investissement (facultatif)</h3><div class="grid">
+<label class="choice"><input type="radio" name="investment" value="none" checked><span><b>Ne pas investir</b><small>Conserver la trésorerie pour la suite.</small></span></label>
+<label class="choice"><input type="radio" name="investment" value="green"><span><b>Technologies vertes</b><small>20 000 € · environnement +3 · gagne une étoile verte.</small></span></label>
+<label class="choice"><input type="radio" name="investment" value="local"><span><b>Production locale</b><small>15 000 € · environnement +2 · clients +1.</small></span></label>
+<label class="choice"><input type="radio" name="investment" value="expand"><span><b>Agrandir l’entreprise</b><small>30 000 € · +5 salariés et capacité de production +20 %.</small></span></label>
+<label class="choice"><input type="radio" name="investment" value="abroad"><span><b>Se développer à l’étranger</b><small>50 000 € · +30 000 € de chiffre d’affaires potentiel.</small></span></label>
+</div></div>
+<div class="actions"><button type="submit" class="primary" id="validateBtn">Valider les décisions →</button></div>
+</form>
+<section id="handoff" class="panel hidden"><h2>✅ Tour terminé</h2><p id="handoffText"></p><button class="primary" id="nextBtn">Joueur suivant →</button></section>
+<section class="panel"><div class="topline"><h2>📊 Classement provisoire</h2><span class="muted">Valeur = trésorerie + réputation estimée</span></div><div id="ranking"></div></section>
+<section class="panel"><h2>📜 Journal de la partie</h2><div id="log" class="log muted">Les événements apparaîtront ici.</div></section>
+</section>
+<section id="end" class="panel hidden"><div class="eyebrow" style="color:#0f766e">Fin de partie</div><h2 style="font-size:1.7rem">🏆 Le classement final</h2><p class="muted">La meilleure entreprise combine performance financière et satisfaction de ses parties prenantes.</p><div id="finalRanking"></div><div class="actions"><button class="primary" id="restartBtn">Rejouer</button><button class="ghost" id="downloadBtn">Exporter le bilan (.txt)</button></div></section>
+</main><div class="foot">Prototype jouable · Règles adaptées à partir de ton document de jeu.</div>
+<script>
+const $=id=>document.getElementById(id);
+let players=[], year=1, maxYears=4, current=0, phase='decision', logs=[], lastResults=[];
+const stakeholderNames={employees:'Salariés',clients:'Clients',shareholders:'Actionnaires',suppliers:'Fournisseurs',environment:'Environnement'};
+function euro(n){return Math.round(n).toLocaleString('fr-FR')+' €'}
+function clamp(n){return Math.max(0,Math.min(10,n))}
+function makePlayer(name){return {name,cash:100000,employees:10,factories:1,revenue:0,profit:0,stars:0,abroad:false,capacity:1,stake:{employees:5,clients:5,shareholders:5,suppliers:5,environment:5},done:false}}
+function renderNames(){const count=+$('playerCount').value; $('names').innerHTML=Array.from({length:count},(_,i)=>`<div><label for="p${i}">Nom de l'entreprise ${i+1}</label><input id="p${i}" maxlength="24" value="${['Océan Industries','Nova Énergie','Terra Solutions','Horizon Groupe'][i]}"></div>`).join('')}
+$('playerCount').addEventListener('change',renderNames);renderNames();
+function log(msg){logs.unshift(`Année ${year} — ${msg}`);renderLog()}
+function renderLog(){$('log').innerHTML=logs.map(x=>`<div class="log-item">${esc(x)}</div>`).join('')}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function score(p){return p.cash + Object.values(p.stake).reduce((a,b)=>a+b,0)*1500+p.stars*3000+(p.abroad?5000:0)}
+function start(){players=Array.from({length:+$('playerCount').value},(_,i)=>makePlayer($('p'+i).value.trim()||`Entreprise ${i+1}`));maxYears=+$('years').value;year=1;current=0;logs=[];lastResults=[];$('setup').classList.add('hidden');$('end').classList.add('hidden');$('game').classList.remove('hidden');log('La partie commence. Chaque entreprise dispose de 100 000 €, 10 salariés et 1 usine.');startTurn()}
+$('startBtn').onclick=start;
+const eventTypes=[
+{title:'Hausse du prix de l’énergie',desc:'Les coûts de production augmentent cette année de 5 000 €.',effect:p=>{p.cash-=5000;p.profit-=5000}},
+{title:'Avis client très positif',desc:'Une entreprise gagne en réputation et en satisfaction client.',effect:p=>{p.stake.clients=clamp(p.stake.clients+1);p.cash+=3000}},
+{title:'Incident chez un fournisseur',desc:'La sous-traitance est risquée : si tu sous-traites, cela coûte 8 000 €.',effect:(p,choice)=>{if(choice==='outsource'){p.cash-=8000;p.profit-=8000;p.stake.suppliers=clamp(p.stake.suppliers-1)}}},
+{title:'Subvention écologique',desc:'Un investissement vert ou local est soutenu par une aide de 5 000 €.',effect:(p,choice)=>{if(choice==='green'||choice==='local'){p.cash+=5000;p.profit+=5000}}},
+{title:'Demande en hausse',desc:'Le marché est dynamique : +5 000 € de chiffre d’affaires.',effect:p=>{p.cash+=5000;p.revenue+=5000;p.profit+=5000}}
+];
+let currentEvent=null;
+function startTurn(){phase='decision';let p=players[current];$('roundLabel').textContent=`Année ${year} sur ${maxYears}`;$('turnTitle').textContent=`Décisions de ${p.name}`;$('turnPill').textContent=`Joueur ${current+1}/${players.length}`;$('decisionForm').classList.remove('hidden');$('handoff').classList.add('hidden');$('validateBtn').disabled=false;$('decisionForm').reset();$('stats').innerHTML='';renderPlayer();currentEvent=eventTypes[Math.floor(Math.random()*eventTypes.length)];$('eventBox').classList.remove('hidden');$('eventBox').innerHTML=`<b>🎲 Événement de l’année : ${currentEvent.title}</b><div>${currentEvent.desc}</div>`}
+function renderPlayer(){const p=players[current];$('stats').innerHTML=[['Trésorerie',euro(p.cash)],['Chiffre d’affaires précédent',euro(p.revenue)],['Salariés',p.employees],['Étoiles vertes',`⭐ ${p.stars}`]].map(([a,b])=>`<div class="stat"><span>${a}</span><strong>${b}</strong></div>`).join('');$('stakeholders').innerHTML=Object.entries(p.stake).map(([k,v])=>`<div class="stake"><div class="topline"><b>${stakeholderNames[k]}</b><span>${v}/10</span></div><div class="meter"><div style="width:${v*10}%"></div></div></div>`).join('');renderRanking()}
+function selected(name){return document.querySelector(`input[name="${name}"]:checked`).value}
+$('decisionForm').addEventListener('submit',e=>{e.preventDefault();if(phase!=='decision')return;const p=players[current], production=selected('production'), price=selected('price'), make=selected('make'), salary=selected('salary'), investment=selected('investment');let rev=production==='volume'?20000:15000,cost=production==='volume'?10000:5000;
+if(p.abroad)rev+=30000;
+if(price==='low'){rev+=7000;p.stake.clients=clamp(p.stake.clients+1)}else{rev+=3000;p.stake.shareholders=clamp(p.stake.shareholders+1)}
+if(make==='internal'){cost+=15000;if(p.cash>=15000){p.cash-=15000;p.profit-=15000;p.stake.suppliers=clamp(p.stake.suppliers+1)}else{p.stake.shareholders=clamp(p.stake.shareholders-1);log(`${p.name} n’a pas assez de trésorerie pour investir en production interne.`)}}
+if(salary==='raise'){cost+=8000;p.stake.employees=clamp(p.stake.employees+3);p.stake.shareholders=clamp(p.stake.shareholders-1)}else{cost-=5000;p.stake.shareholders=clamp(p.stake.shareholders+2);p.stake.employees=clamp(p.stake.employees-3)}
+if(production==='quality')p.stake.clients=clamp(p.stake.clients+1);
+if(investment==='green'){cost+=20000;p.stars++;p.stake.environment=clamp(p.stake.environment+3)}
+if(investment==='local'){cost+=15000;p.stake.environment=clamp(p.stake.environment+2);p.stake.clients=clamp(p.stake.clients+1)}
+if(investment==='expand'){cost+=30000;p.employees+=5;p.capacity*=1.2}
+if(investment==='abroad'){cost+=50000;p.abroad=true;rev+=30000}
+if(p.cash<cost){alert(`Trésorerie insuffisante pour couvrir les coûts (${euro(cost)}). Choisis une décision moins coûteuse.`);return}
+p.cash-=cost;currentEvent.effect(p,make);p.cash+=rev;p.revenue=rev;p.profit=rev-cost;
+const lowCount=players.filter((_,i)=>i!==current&&lastResults[i]?.price==='low').length; // competing prices from previous completed choices
+if(price==='low'&&players.filter((_,i)=>i!==current&&lastResults[i]?.price==='low').length===players.length-1){p.cash-=5000;p.profit-=5000;log('Guerre des prix : toutes les entreprises ont choisi un prix bas, bénéfices réduits.')}
+p.done=true;lastResults[current]={price,make};log(`${p.name} : CA ${euro(rev)}, coûts ${euro(cost)}, résultat ${euro(rev-cost)}.`);phase='handoff';$('decisionForm').classList.add('hidden');$('handoff').classList.remove('hidden');$('handoffText').textContent=`Décisions enregistrées pour ${p.name}. Résultat estimé de l’année : ${euro(p.profit)}. Passe l’appareil au joueur suivant.`;$('nextBtn').textContent=current===players.length-1?(year===maxYears?'Voir le classement final 🏆':'Année suivante →'):'Joueur suivant →';renderPlayer()});
+$('nextBtn').onclick=()=>{if(current<players.length-1){current++;startTurn()}else if(year<maxYears){year++;current=0;players.forEach(p=>p.done=false);lastResults=[];log(`Début de l’année ${year}.`);startTurn()}else{finish()}};
+function renderRanking(){const sorted=[...players].sort((a,b)=>score(b)-score(a));$('ranking').innerHTML=sorted.map((p,i)=>`<div class="playerrow topline"><div><b>${i+1}. ${esc(p.name)}</b><div class="muted">${p.employees} salariés · ${p.stars} étoile(s) verte(s)</div></div><div style="text-align:right"><b>${euro(score(p))}</b><div class="muted">trésorerie ${euro(p.cash)}</div></div></div>`).join('')}
+function finish(){$('game').classList.add('hidden');$('end').classList.remove('hidden');const sorted=[...players].sort((a,b)=>score(b)-score(a));$('finalRanking').innerHTML=sorted.map((p,i)=>`<div class="playerrow topline"><div><div class="rank">#${i+1}</div><b>${esc(p.name)}</b><div class="muted">${p.employees} salariés · ${p.factories} usine(s) · ${p.stars} étoile(s) verte(s)</div><div class="muted">Parties prenantes : ${Object.entries(p.stake).map(([k,v])=>stakeholderNames[k]+' '+v+'/10').join(' · ')}</div></div><div style="text-align:right"><b>${euro(score(p))}</b><div class="muted">Trésorerie finale</div></div></div>`).join('');log(`Fin de partie. Gagnant : ${sorted[0].name}.`)}
+$('restartBtn').onclick=()=>{$('end').classList.add('hidden');$('setup').classList.remove('hidden')};
+$('downloadBtn').onclick=()=>{const sorted=[...players].sort((a,b)=>score(b)-score(a));const content='BILAN — JEUX DE ENTREPRISE\n\n'+sorted.map((p,i)=>`${i+1}. ${p.name}\nScore : ${score(p)}\nTrésorerie : ${p.cash}\nSalariés : ${p.employees}\nÉtoiles vertes : ${p.stars}\n`+Object.entries(p.stake).map(([k,v])=>`${stakeholderNames[k]} : ${v}/10`).join('\n')).join('\n\n')+'\n\nJOURNAL\n'+logs.join('\n');const blob=new Blob([content],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bilan-jeux-entreprise.txt';a.click();URL.revokeObjectURL(a.href)};
+</script>
+</body></html>
